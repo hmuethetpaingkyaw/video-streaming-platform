@@ -3,5 +3,8 @@ dist/
 .next/
 *.log
 .env
+.env.*.local
+*.tsbuildinfo
+coverage/
 .DS_Store
 uploads/
