@@ -16,11 +16,14 @@
   "type": "commonjs",
   "dependencies": {
     "better-sqlite3": "^13.0.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.6.2",
     "nodemon": "^3.1.14",
     "tsx": "^4.23.15",
