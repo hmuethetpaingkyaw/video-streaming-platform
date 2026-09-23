@@ -1,5 +1,9 @@
 import express from "express";
 import healthRoutes from "./routes/health.routes";
+import db from "./db/connection";
+import { runMigrations } from "./db/migrate";
+
+runMigrations(db);
 
 const app = express();
 const port = process.env.PORT ?? 4000;

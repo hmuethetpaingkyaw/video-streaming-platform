@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec \"tsx --env-file-if-exists=.env src/index.ts\"",
     "build": "tsc",
+    "postbuild": "node -e \"require('fs').cpSync('src/db/migrations', 'dist/db/migrations', { recursive: true })\"",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,9 +15,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.2",
     "nodemon": "^3.1.14",

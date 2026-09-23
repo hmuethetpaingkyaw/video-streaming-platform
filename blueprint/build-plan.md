@@ -7,7 +7,7 @@ The backend uses Express + TypeScript, the frontend uses Next.js, FFmpeg handles
 ## V1
 
 - [x] 1. Project foundation — Next.js frontend and Express backend with TypeScript, environment configuration, basic project structure; verify frontend → backend connectivity with a health check
-- [ ] 2. Video database model — SQLite schema for videos using `better-sqlite3`, no ORM: title, original file path, HLS playlist path, status (PROCESSING/READY/FAILED), duration, thumbnail path, timestamps
+- [x] 2. Video database model — SQLite schema for videos using `better-sqlite3`, no ORM: title, original file path, HLS playlist path, status (PROCESSING/READY/FAILED), duration, thumbnail path, timestamps
 - [ ] 3. Video upload API — endpoint that accepts a video file upload, stores it to local disk, and creates a video record with status PROCESSING
 - [ ] 4. Upload UI — a simple frontend form to upload a video file, and a list page showing uploaded videos with their status
 - [ ] 5. FFmpeg transcoding (single quality) — run FFmpeg synchronously on the uploaded file to produce HLS output (playlist + segments), target: source resolution, capped bitrate (~2-3 Mbps H.264/AAC), ~6s HLS segments; update the video record to READY on success or FAILED on error
