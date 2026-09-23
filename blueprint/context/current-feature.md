@@ -91,7 +91,7 @@ touches build-plan scope.
     still return the same shape as before against a real row - no test
     runner is configured yet, so this isn't an automated test.
 
-- [ ] 2. Error-middleware fixes (F-04, F-05, F-06)
+- [x] 2. Error-middleware fixes (F-04, F-05, F-06)
   - `backend/src/middleware/error.middleware.ts`: unlink `req.file.path` when
     present, for every branch; add `console.error(err)` to the generic
     branch; add the `multer.MulterError` -> `400` branch.
