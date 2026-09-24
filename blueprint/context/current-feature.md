@@ -64,7 +64,7 @@ item needs that today.
     missing id still throws `NotFoundError` - no test runner is configured
     yet, so this isn't an automated test.
 
-- [ ] 2. Resolve F-08 as accepted and update the standard
+- [x] 2. Resolve F-08 as accepted and update the standard
   - `blueprint/context/coding-standards.md`: update the Domain Entities
     section to document that an entity may construct itself from a raw row
     (`new Video(row)`) as an alternative to repository-side mapping, keeping

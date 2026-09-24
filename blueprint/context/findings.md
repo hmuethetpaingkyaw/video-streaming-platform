@@ -7,7 +7,7 @@
 > finding is `open` or `fixed`, then archives resolved findings with the work
 > and resets this file.
 
-### F-07 [P2] open - The `update()` allowlist can silently drift from the interface it mirrors
+### F-07 [P2] fixed - The `update()` allowlist can silently drift from the interface it mirrors
 
 **File:** backend/src/repositories/video.repository.ts:8
 **Found:** 2026-09-23 by /audit (scope: current; lens: quality)
@@ -35,9 +35,19 @@ catch additions, derive the list from a
 `Record<keyof UpdateChanges, true>` and use `Object.keys` on it. This is a few
 lines inside the existing module, adds no dependency or abstraction, and loses
 no current requirement.
-**Resolution:**
+**Resolution:** 2026-09-23, `fix/repair-audit-findings`: repaired by removing
+the class of problem rather than hardening the check. `update()` no longer
+builds a `SET` clause from `Object.keys(changes)` at all - it fetches the
+current row, then runs one fixed `UPDATE videos SET hlsPlaylistPath = ?,
+status = ?, duration = ?, thumbnailPath = ?, updatedAt = ? WHERE id = ?`
+query, filling each value from `changes ?? current`. `UPDATABLE_FIELDS` is
+removed entirely; no runtime key ever reaches the query, so there is nothing
+left to allowlist or for a type to drift out of sync with. Verified with a
+manual `npx tsx` script: a partial update changes only the given fields, a
+second partial update afterward preserves the first's values, and `update()`
+on a missing id still throws `NotFoundError`.
 
-### F-08 [P3] open - The `Video` entity's constructor is coupled to database column names
+### F-08 [P3] accepted - The `Video` entity's constructor is coupled to database column names
 
 **File:** backend/src/entities/video.entity.ts:14
 **Found:** 2026-09-23 by /audit (scope: current; lens: quality)
@@ -64,4 +74,10 @@ translation. Nothing is lost either way: the explicit `SELECT` column list and
 the explicit assignment that close F-02 stay exactly as they are. If the current
 placement is the intended design, the standards' repository-mapping rule should
 be updated to match so the next reviewer does not raise this again.
-**Resolution:**
+**Resolution:** 2026-09-23, user's explicit decision: keep `new Video(row)` as
+the row-construction pattern; not repairing. `coding-standards.md`'s Domain
+Entities section is updated to document this as an allowed pattern - an
+entity may build itself from a raw row via its constructor, as an alternative
+to repository-side mapping - so the boundary that matters (only the
+repository ever reads a raw row or imports the database driver's types)
+stays documented accurately and a future audit doesn't re-raise this.
