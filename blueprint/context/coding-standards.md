@@ -116,10 +116,15 @@ model free to change without breaking the external API contract.
   repository for an existing one), applies business rules, then either passes
   the resulting entity to the repository to persist, or maps it to a response
   DTO to return to the controller.
-- Repositories map between domain entities and stored rows in both directions
-  (entity -> row on write, row -> entity on read). Controllers and DTOs never
-  reference a domain entity directly, and a domain entity never leaks a
-  database-specific type.
+- Repositories own the query and the column list for every read, and map an
+  entity to a row on write. The row-to-entity mapping on read may live on the
+  entity itself, as a constructor that builds an instance from a raw row
+  (e.g. `new Video(row)`), instead of a separate repository-side mapper -
+  the important boundary is that no layer other than the repository ever
+  reads a raw row or imports the database driver's types. Controllers and
+  DTOs never reference a domain entity's row-constructing constructor
+  directly, and a domain entity never leaks a database-driver type to those
+  layers.
 
 ### Dependency Injection
 

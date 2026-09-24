@@ -1,9 +1,12 @@
 import type Database from "better-sqlite3";
-import type { Video } from "../entities/video.entity";
+import { Video } from "../entities/video.entity";
 import type { IVideoRepository } from "./interfaces/IVideoRepository";
 import { NotFoundError } from "../errors/NotFoundError";
 
 type UpdateChanges = Parameters<IVideoRepository["update"]>[1];
+
+const SELECT_COLUMNS =
+  "id, title, originalPath, hlsPlaylistPath, status, duration, thumbnailPath, createdAt, updatedAt";
 
 export class VideoRepository implements IVideoRepository {
   constructor(private db: Database.Database) {}
@@ -21,32 +24,38 @@ export class VideoRepository implements IVideoRepository {
 
   findById(id: number): Video | null {
     const row = this.db
-      .prepare("SELECT * FROM videos WHERE id = ?")
+      .prepare(`SELECT ${SELECT_COLUMNS} FROM videos WHERE id = ?`)
       .get(id);
 
-    return (row as Video | undefined) ?? null;
+    return row ? new Video(row) : null;
   }
 
   findAll(): Video[] {
     return this.db
-      .prepare("SELECT * FROM videos ORDER BY id DESC")
-      .all() as Video[];
+      .prepare(`SELECT ${SELECT_COLUMNS} FROM videos ORDER BY id DESC`)
+      .all()
+      .map((row) => new Video(row));
   }
 
   update(id: number, changes: UpdateChanges): Video {
-    const now = new Date().toISOString();
-    const fields = Object.keys(changes) as (keyof UpdateChanges)[];
-
-    const assignments = [...fields.map((field) => `${field} = ?`), "updatedAt = ?"];
-    const values = [...fields.map((field) => changes[field]), now, id];
-
-    const result = this.db
-      .prepare(`UPDATE videos SET ${assignments.join(", ")} WHERE id = ?`)
-      .run(...values);
-
-    if (result.changes === 0) {
+    const current = this.findById(id);
+    if (!current) {
       throw new NotFoundError(`Video ${id} not found`);
     }
+
+    const now = new Date().toISOString();
+    this.db
+      .prepare(
+        "UPDATE videos SET hlsPlaylistPath = ?, status = ?, duration = ?, thumbnailPath = ?, updatedAt = ? WHERE id = ?",
+      )
+      .run(
+        changes.hlsPlaylistPath ?? current.hlsPlaylistPath,
+        changes.status ?? current.status,
+        changes.duration ?? current.duration,
+        changes.thumbnailPath ?? current.thumbnailPath,
+        now,
+        id,
+      );
 
     return this.findById(id)!;
   }
