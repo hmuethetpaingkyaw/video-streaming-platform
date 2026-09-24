@@ -1,18 +1,49 @@
+import fs from "node:fs/promises";
 import path from "node:path";
+import { backendRoot, hlsDir } from "../config/paths";
 import type { Video } from "../entities/video.entity";
 import type { IVideoRepository } from "../repositories/interfaces/IVideoRepository";
+import type { ITranscoder } from "./interfaces/ITranscoder";
 import type { CreateVideoInput, IVideoService } from "./interfaces/IVideoService";
 
 export class VideoService implements IVideoService {
-  constructor(private videoRepository: IVideoRepository) {}
+  constructor(
+    private videoRepository: IVideoRepository,
+    private transcoder: ITranscoder,
+  ) {}
 
-  createVideo(input: CreateVideoInput): Video {
+  async createVideo(input: CreateVideoInput): Promise<Video> {
     const trimmedTitle = input.title?.trim();
     const title =
       trimmedTitle && trimmedTitle.length > 0
         ? trimmedTitle
         : path.basename(input.originalFilename, path.extname(input.originalFilename));
 
-    return this.videoRepository.create({ title, originalPath: input.storedPath });
+    const video = this.videoRepository.create({ title, originalPath: input.storedPath });
+    return this.transcode(video);
+  }
+
+  private async transcode(video: Video): Promise<Video> {
+    const outputDir = path.join(hlsDir, String(video.id));
+
+    try {
+      const { playlistFile, duration } = await this.transcoder.transcode(
+        path.join(backendRoot, video.originalPath),
+        outputDir,
+      );
+      return this.videoRepository.update(video.id, {
+        status: "READY",
+        hlsPlaylistPath: path.relative(backendRoot, playlistFile),
+        duration,
+      });
+    } catch (err) {
+      console.error(`Transcoding failed for video ${video.id}:`, err);
+      await fs.rm(outputDir, { recursive: true, force: true });
+      return this.videoRepository.update(video.id, { status: "FAILED" });
+    }
+  }
+
+  listVideos(): Video[] {
+    return this.videoRepository.findAll();
   }
 }

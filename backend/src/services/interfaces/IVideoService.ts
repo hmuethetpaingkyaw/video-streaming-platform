@@ -7,5 +7,6 @@ export interface CreateVideoInput {
 }
 
 export interface IVideoService {
-  createVideo(input: CreateVideoInput): Video;
+  createVideo(input: CreateVideoInput): Promise<Video>;
+  listVideos(): Video[];
 }

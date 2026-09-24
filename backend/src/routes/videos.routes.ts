@@ -8,8 +8,8 @@ import { createVideoSchema } from "../dtos/video.dto";
 import { ValidationError } from "../errors/ValidationError";
 import { validate } from "../middleware/validate.middleware";
 import { videosController } from "../container";
+import { uploadsDir } from "../config/paths";
 
-const uploadsDir = path.resolve(__dirname, "../../uploads");
 fs.mkdirSync(uploadsDir, { recursive: true });
 
 const upload = multer({
@@ -28,6 +28,8 @@ function requireVideoFile(req: Request, _res: Response, next: NextFunction): voi
 }
 
 const router = Router();
+
+router.get("/", (req, res) => videosController.list(req, res));
 
 router.post(
   "/",
