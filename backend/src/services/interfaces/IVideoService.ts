@@ -8,4 +8,5 @@ export interface CreateVideoInput {
 
 export interface IVideoService {
   createVideo(input: CreateVideoInput): Video;
+  listVideos(): Video[];
 }

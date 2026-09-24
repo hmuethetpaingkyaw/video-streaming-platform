@@ -15,4 +15,8 @@ export class VideoService implements IVideoService {
 
     return this.videoRepository.create({ title, originalPath: input.storedPath });
   }
+
+  listVideos(): Video[] {
+    return this.videoRepository.findAll();
+  }
 }

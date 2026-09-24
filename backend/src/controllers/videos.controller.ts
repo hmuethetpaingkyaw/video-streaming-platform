@@ -18,4 +18,8 @@ export class VideosController {
 
     res.status(201).json(video);
   }
+
+  list(_req: Request, res: Response): void {
+    res.json(this.videoService.listVideos());
+  }
 }

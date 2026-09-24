@@ -29,6 +29,8 @@ function requireVideoFile(req: Request, _res: Response, next: NextFunction): voi
 
 const router = Router();
 
+router.get("/", (req, res) => videosController.list(req, res));
+
 router.post(
   "/",
   upload.single("video"),
