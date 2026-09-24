@@ -5,8 +5,6 @@ import { NotFoundError } from "../errors/NotFoundError";
 
 type UpdateChanges = Parameters<IVideoRepository["update"]>[1];
 
-const UPDATABLE_FIELDS = ["hlsPlaylistPath", "status", "duration", "thumbnailPath"] as const;
-
 const SELECT_COLUMNS =
   "id, title, originalPath, hlsPlaylistPath, status, duration, thumbnailPath, createdAt, updatedAt";
 
@@ -40,21 +38,24 @@ export class VideoRepository implements IVideoRepository {
   }
 
   update(id: number, changes: UpdateChanges): Video {
-    const now = new Date().toISOString();
-    const fields = (Object.keys(changes) as (keyof UpdateChanges)[]).filter((field) =>
-      (UPDATABLE_FIELDS as readonly string[]).includes(field),
-    );
-
-    const assignments = [...fields.map((field) => `${field} = ?`), "updatedAt = ?"];
-    const values = [...fields.map((field) => changes[field]), now, id];
-
-    const result = this.db
-      .prepare(`UPDATE videos SET ${assignments.join(", ")} WHERE id = ?`)
-      .run(...values);
-
-    if (result.changes === 0) {
+    const current = this.findById(id);
+    if (!current) {
       throw new NotFoundError(`Video ${id} not found`);
     }
+
+    const now = new Date().toISOString();
+    this.db
+      .prepare(
+        "UPDATE videos SET hlsPlaylistPath = ?, status = ?, duration = ?, thumbnailPath = ?, updatedAt = ? WHERE id = ?",
+      )
+      .run(
+        changes.hlsPlaylistPath ?? current.hlsPlaylistPath,
+        changes.status ?? current.status,
+        changes.duration ?? current.duration,
+        changes.thumbnailPath ?? current.thumbnailPath,
+        now,
+        id,
+      );
 
     return this.findById(id)!;
   }
