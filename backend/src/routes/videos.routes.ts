@@ -8,8 +8,8 @@ import { createVideoSchema } from "../dtos/video.dto";
 import { ValidationError } from "../errors/ValidationError";
 import { validate } from "../middleware/validate.middleware";
 import { videosController } from "../container";
+import { uploadsDir } from "../config/paths";
 
-const uploadsDir = path.resolve(__dirname, "../../uploads");
 fs.mkdirSync(uploadsDir, { recursive: true });
 
 const upload = multer({

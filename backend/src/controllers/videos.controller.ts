@@ -6,11 +6,11 @@ import type { CreateVideoRequestDto } from "../dtos/video.dto";
 export class VideosController {
   constructor(private videoService: IVideoService) {}
 
-  create(req: Request, res: Response): void {
+  async create(req: Request, res: Response): Promise<void> {
     const { title } = req.body as CreateVideoRequestDto;
     const file = req.file!;
 
-    const video = this.videoService.createVideo({
+    const video = await this.videoService.createVideo({
       title,
       originalFilename: file.originalname,
       storedPath: path.join("uploads", file.filename),
