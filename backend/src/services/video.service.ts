@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
+import crypto from "node:crypto";
 import path from "node:path";
+import type { VideosSnapshotResponseDto } from "../dtos/video.dto";
 import { backendRoot, hlsDir } from "../config/paths";
 import type { Video } from "../entities/video.entity";
 import type { IVideoRepository } from "../repositories/interfaces/IVideoRepository";
@@ -45,5 +47,15 @@ export class VideoService implements IVideoService {
 
   listVideos(): Video[] {
     return this.videoRepository.findAll();
+  }
+
+  getSnapshot(): VideosSnapshotResponseDto {
+    const videos = this.videoRepository.findAll();
+    const token = crypto
+      .createHash("sha1")
+      .update(JSON.stringify(videos.map((video) => [video.id, video.status, video.updatedAt])))
+      .digest("hex");
+
+    return { token, videos };
   }
 }

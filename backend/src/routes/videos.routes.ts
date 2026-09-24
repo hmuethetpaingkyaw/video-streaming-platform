@@ -30,6 +30,8 @@ function requireVideoFile(req: Request, _res: Response, next: NextFunction): voi
 const router = Router();
 
 router.get("/", (req, res) => videosController.list(req, res));
+router.get("/stream", (req, res) => videosController.stream(req, res));
+router.get("/changes", (req, res, next) => videosController.changes(req, res, next));
 
 router.post(
   "/",

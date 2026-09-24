@@ -1,6 +1,6 @@
 # Video Streaming Platform - Project Overview
 
-<!-- blueprint:source-hash d42d38774a189ed2a1d517a58b737f31e7ee05dcf83a2445abec83404173f97f -->
+<!-- blueprint:source-hash 3a5f21205155eb95519f62a233859344333d25471213bccad7a0ccb9ecde2e72 -->
 
 > A minimal YouTube-style app for learning the video pipeline: upload a video, transcode it to HLS, watch it stream in the browser.
 
@@ -29,7 +29,7 @@ MVP feature set, in build order:
 5. **FFmpeg transcoding (single quality)** - synchronous FFmpeg run producing HLS output (playlist + segments); marks the video READY or FAILED. This is the headline feature - the core pipeline the whole project exists to learn.
 6. **HLS playback** - backend serves HLS files; frontend player page streams a READY video via hls.js.
 7. **Background job queue** - moves transcoding off the request thread into BullMQ + Redis so upload returns immediately; Redis runs via Docker Compose (Redis only - frontend/backend stay local).
-8. **Processing status UI** - video list reflects PROCESSING/READY/FAILED, polling every 3-5 seconds.
+8. **Processing status UI** - video list reflects PROCESSING/READY/FAILED, polling every 3-5 seconds via `router.refresh()`; plus learning demo pages under `/polling/` comparing five update techniques (refresh, client fetch, SWR, SSE, long polling).
 9. **Upload validation and error handling** - ~2GB size cap, accepts mp4/mov/webm/mkv only, handles FFmpeg failures without crashing the worker, consistent API error responses.
 10. **Thumbnail generation** - extracts a frame during processing and shows it in the video list.
 11. **Video list and player polish** - clean empty/loading/error states.
@@ -81,6 +81,7 @@ Not in v1. This is a personal learning project, not a product.
 Minimal internal-tool feel, not a polished consumer product - functional over pretty, status always visible (Processing/Ready/Failed), no unnecessary UI complexity.
 
 - `/` - video list (main screen): every video with its status, upload entry point, polls every 3-5s while any video is processing
+- `/polling/*` - learning demos (item 8): one page per status-update technique, sharing the same list UI
 - `/upload` - form to submit a new video file
 - `/videos/[id]` - player page for a READY video, streamed via hls.js
 

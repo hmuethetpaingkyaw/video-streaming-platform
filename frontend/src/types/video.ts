@@ -11,3 +11,8 @@ export interface Video {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface VideosSnapshot {
+  token: string;
+  videos: Video[];
+}

@@ -1,3 +1,4 @@
+import type { VideosSnapshotResponseDto } from "../../dtos/video.dto";
 import type { Video } from "../../entities/video.entity";
 
 export interface CreateVideoInput {
@@ -9,4 +10,5 @@ export interface CreateVideoInput {
 export interface IVideoService {
   createVideo(input: CreateVideoInput): Promise<Video>;
   listVideos(): Video[];
+  getSnapshot(): VideosSnapshotResponseDto;
 }

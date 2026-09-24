@@ -1,0 +1,9 @@
+.notice {
+  color: #b45309;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notice {
+    color: #fbbf24;
+  }
+}

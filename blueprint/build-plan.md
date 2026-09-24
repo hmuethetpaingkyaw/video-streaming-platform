@@ -13,7 +13,7 @@ The backend uses Express + TypeScript, the frontend uses Next.js, FFmpeg handles
 - [ ] 5. FFmpeg transcoding (single quality) — run FFmpeg synchronously on the uploaded file to produce HLS output (playlist + segments), target: source resolution, capped bitrate (~2-3 Mbps H.264/AAC), ~6s HLS segments; update the video record to READY on success or FAILED on error
 - [ ] 6. HLS playback — serve the HLS playlist/segments from the backend, and build a frontend player page that streams a READY video using hls.js
 - [ ] 7. Background job queue — move transcoding off the request thread into BullMQ + Redis, so upload returns immediately and processing happens asynchronously; Redis runs via a new `docker-compose.yml` (Redis only), frontend/backend stay local
-- [ ] 8. Processing status UI — reflect PROCESSING / READY / FAILED in the video list, updating without a manual page reload (poll every 3-5 seconds)
+- [x] 8. Processing status UI — reflect PROCESSING / READY / FAILED in the video list, updating without a manual page reload (poll every 3-5 seconds). The real `/` page uses `router.refresh()` polling; as a learning exercise, also build one demo page per technique under `/polling/`: (a) `router.refresh()`, (b) client fetch with state, (c) SWR, (d) Server-Sent Events, (e) long polling
 - [ ] 9. Upload validation and error handling — validate file type/size before accepting an upload (~2GB cap, accept mp4/mov/webm/mkv), handle FFmpeg failures without crashing the worker, consistent API error responses
 - [ ] 10. Thumbnail generation — extract a frame from the video during processing and show it in the video list
 - [ ] 11. Video list and player polish — clean up empty/loading/error states so the app is pleasant to use for its one real user (me)

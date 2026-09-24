@@ -14,3 +14,11 @@ export async function fetchVideos(): Promise<Video[]> {
 
   return (await response.json()) as Video[];
 }
+
+export async function fetchVideosOrNull(): Promise<Video[] | null> {
+  try {
+    return await fetchVideos();
+  } catch {
+    return null;
+  }
+}
